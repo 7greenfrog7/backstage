@@ -82,4 +82,12 @@ class Presignupinfo extends \yii\db\ActiveRecord
             'begin_datetime' => 'Begin Datetime',
         ];
     }
+    
+    /**
+     * 一键分配账号给申请参赛的用户
+     */
+    public function onekeyAccount($acount_pwd) {
+      
+    }
+    
 }
