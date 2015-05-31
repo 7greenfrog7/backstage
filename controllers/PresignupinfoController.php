@@ -119,9 +119,20 @@ class PresignupinfoController extends Controller
         }
     }
     
-    public function actionOnekeyAccount()
+    public function actionOnekeyaccount()
     {
         $model = new Presignupinfo();
+        
+        $result = $model->onekeyAccount(Yii::$app->request->post('account_user_type'),Yii::$app->request->post('account_pwd'));
+        
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        
+        return [
+          'error' => $result['error'],
+          'msg' => $result['msg'],
+          ];
+        
+        
         
     }
 }

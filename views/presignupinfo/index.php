@@ -16,6 +16,10 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 	<p>
 		<input id="account_pwd" type="text" style="height:34px;border-radius: 4px;margin: 0px 5px 0px 0px;border: 1px solid #ccc;" placeholder="批量输入账号与密码"/>
+        <select id="account_user_type"><!-- 为以下两种用户分配账号密码：1报名参赛的用户 2申请账号密码重置的用户 -->
+			<option value="0">报名参赛</option>
+			<option value="6">密码重置</option>
+		</select>
         <?= Html::button('一键分配', ['id'=>'onekey-account','title' => '一键分配账号给申请者','class' => 'btn btn-success']) ?>
 		<input type="text" style="height:34px;border-radius: 4px;margin: 0px 5px 0px 0px;border: 1px solid #ccc;" placeholder="批量输入账号"/>
         <?= Html::button('一键退赛', ['id'=>'onekey-quite','title' => '一键退赛并发送短信和邮件通知','class' => 'btn btn-danger']) ?>
