@@ -85,17 +85,19 @@ class Presignupinfo extends \yii\db\ActiveRecord {
    */
   public function onekeyAccount($account_user_type, $acount_pwd) {
 
+	if(!$acount_pwd){
+		return [
+          'error' => 1,
+          'msg' => '请输入账号和密码',
+      ];
+	}
+  
     //根据空格将字符串分割为数组
     $account_pwd_array = explode(" ", $acount_pwd);
 
     //计算共输入几个账号供后台分配，后续将与待分配人数做比较
-    if (!$count_of_account = sizeof($account_pwd_array)) {
-      return [
-          'error' => 1,
-          'msg' => '请输入至少一对账号和密码',
-      ];
-    }
-
+    $count_of_account = sizeof($account_pwd_array);
+	
     foreach ($account_pwd_array as $key => $value) {
       $temp_account_pwd_array = explode(",", $value);
       //检查账号格式是否正确
@@ -127,7 +129,7 @@ class Presignupinfo extends \yii\db\ActiveRecord {
     if (!$count_of_waiter = $result['count']) {
       return [
           'error' => 1,
-          'msg' => '目前没有等待分配账号的' . ($account_user_type == 0) ? '申请参赛的' : '申请重置密码的' . '用户',
+          'msg' => ($account_user_type == 0) ? '目前没有等待分配账号的申请参赛的用户' : '目前没有等待分配账号的申请重置密码的用户',
       ];
     }
 
@@ -146,15 +148,14 @@ class Presignupinfo extends \yii\db\ActiveRecord {
     $sql_log = array();
     for ($i = 0; $i < $update_num; $i++) {
       if ($account_user_type == 0) { //申请分配账号密码的用户类型为报名参赛者，需要更新begin_datetime
-        $temp_sql = "update pre_signup_info set game_account= '" . $account_pwd_array[$i][0] ."', game_password='" . $account_pwd_array[$i][1] ."',validate=1 " .",begin_datetime='". date("Y-m-d H:i:s") ."',action_datetime='". date("Y-m-d H:i:s") ."' where validate = ". $account_user_type ." limit 1";
-       $sql_array[$i] =$temp_sql;
+       $sql_array[$i] ="update pre_signup_info set game_account= '" . $account_pwd_array[$i][0] ."', game_password='" . $account_pwd_array[$i][1] ."',validate=1 " .",begin_datetime='". date("Y-m-d H:i:s") ."',action_datetime='". date("Y-m-d H:i:s") ."' where validate = ". $account_user_type ." limit 1";
       } else if ($account_user_type == 6) {//申请分配账号密码的用户类型为申请重置密码者，此时需要直接更新账号所对应的密码即可
         $sql_array[$i] = "update pre_signup_info set" .
-                " game_password=" . $account_pwd_array[$i][1] .
-                ",validate=1 " .
-                ",action_datetime=" . date('Y-m-d H:i:s') .
-                " where validate = " . $account_user_type . " and game_account = " . $account_pwd_array[$i][0] .
-                "LIMIT 1";
+                " game_password='" . $account_pwd_array[$i][1] .
+                "',validate=1 " .
+                ",action_datetime='" . date('Y-m-d H:i:s') .
+                "' where validate = 6 and game_account = '" . $account_pwd_array[$i][0] .
+                "' limit 1";
       }
       //$sql_log[$i] ="INSERT INTO `ultrax`.`pre_loginfo` (`sid`, `uid`, `email`, `username`, `mobile`, `realname`, `count_number`, `game_account`, `game_password`, `now_validate`, `operator_time`, `operator`, `remark`) VALUES ('".$message_array[0]."', '".$message_array[8]."', '".$message_array[4]."', '".$message_array[3]."', '".$message_array[5]."', '".$message_array[9]."', '".$message_array[10]."', '".trim($message_array[1])."', '".trim($message_array[2])."', '1', '".date('Y-m-d H:i:s')."', '".$message_array[11]."', '".trim($message_array[6])."');";	 
     }

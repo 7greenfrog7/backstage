@@ -59,7 +59,7 @@ $this->params['breadcrumbs'][] = $this->title;
             // 'count_bank',
             // 'count_number',
             // 'result',
-            // 'game_password',
+             'game_password',
             // 'remark',
             // 'action_datetime',
             //['attribute'=>'这是测试code','value'=>function(){return 'abc';}],
