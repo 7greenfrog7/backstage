@@ -98,6 +98,9 @@ class Presignupinfo extends \yii\db\ActiveRecord {
     //计算共输入几个账号供后台分配，后续将与待分配人数做比较
     $count_of_account = sizeof($account_pwd_array);
 	
+	//查询账号是否已经分配了的sql语句
+	$sql_check_repeated_account = " select count(*) as count_repeated from pre_signup_info where `game_account` in (";
+	
     foreach ($account_pwd_array as $key => $value) {
       $temp_account_pwd_array = explode(",", $value);
       //检查账号格式是否正确
@@ -114,9 +117,15 @@ class Presignupinfo extends \yii\db\ActiveRecord {
             'msg' => '账号' . $temp_account_pwd_array[0] . '缺少密码，请补全！',
         ];
       }
-      $account_pwd_array[$key] = $temp_account_pwd_array; //array([account,pwd],[account,pwd],....)      
+      $account_pwd_array[$key] = $temp_account_pwd_array; //array([account,pwd],[account,pwd],....) 
+	  
+	  $sql_check_repeated_account .= $account_pwd_array[$key][0]
+	  
     }
-
+	$sql_check_repeated_account = rtrim($sql_check_repeated_account,',').");";
+	exit($sql_check_repeated_account) ;
+	
+	
     //sql查询：查询出有多少处于validate=$account_user_type的条目
     $sql_count_validate = "select count(1) as count from pre_signup_info where validate =" . $account_user_type;
     $connection = Yii::$app->db;
