@@ -203,4 +203,7 @@ class Presignupinfo extends \yii\db\ActiveRecord {
     ];
   }
 
+  public function onekeyQuite($account_array){
+	  
+  }
 }
