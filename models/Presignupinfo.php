@@ -99,7 +99,7 @@ class Presignupinfo extends \yii\db\ActiveRecord {
     $count_of_account = sizeof($account_pwd_array);
 	
 	//查询账号是否已经分配了的sql语句
-	$sql_check_repeated_account = " select count(*) as count_repeated from pre_signup_info where `game_account` in (";
+	$sql_check_repeated_account = " select count(*) as count_repeated from pre_signup_info where `game_account` in ('";
 	
     foreach ($account_pwd_array as $key => $value) {
       $temp_account_pwd_array = explode(",", $value);
@@ -119,11 +119,12 @@ class Presignupinfo extends \yii\db\ActiveRecord {
       }
       $account_pwd_array[$key] = $temp_account_pwd_array; //array([account,pwd],[account,pwd],....) 
 	  
-	  $sql_check_repeated_account .= $account_pwd_array[$key][0]
+	  $sql_check_repeated_account .= $account_pwd_array[$key][0]."','";
 	  
     }
-	$sql_check_repeated_account = rtrim($sql_check_repeated_account,',').");";
-	exit($sql_check_repeated_account) ;
+	$sql_check_repeated_account = rtrim($sql_check_repeated_account,"'");
+	$sql_check_repeated_account = rtrim($sql_check_repeated_account,",");
+	$sql_check_repeated_account .= ")"; 
 	
 	
     //sql查询：查询出有多少处于validate=$account_user_type的条目
@@ -131,8 +132,17 @@ class Presignupinfo extends \yii\db\ActiveRecord {
     $connection = Yii::$app->db;
     $connection->open();
     $command = $connection->createCommand($sql_count_validate);
+	$command_repeat = $connection->createCommand($sql_check_repeated_account);
     $result = $command->queryOne(); //queryAll();
+	$repeat_result = $command_repeat->queryOne();
     $connection->close();
+	
+	if($account_user_type == 0 && $repeat_result > 0){
+		return [
+            'error' => 1,
+            'msg' => '其中有一个账号已经分配，请仔细检查！',
+        ];
+	}
 
     //后台待分配人数
     if (!$count_of_waiter = $result['count']) {
